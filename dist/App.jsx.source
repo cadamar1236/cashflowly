@@ -2,15 +2,6 @@ import { useState, useEffect } from 'react';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './Dashboard';
 
-function getDashboardData() {
-  return Promise.resolve({
-    totalIncome: 0,
-    totalExpenses: 0,
-    balance: 0,
-    transactions: []
-  });
-}
-
 function App() {
   const [user, setUser] = useState(() => {
     try {
@@ -25,7 +16,11 @@ function App() {
   useEffect(() => {
     if (user) {
       setLoading(true);
-      getDashboardData(user.id)
+      fetch('/api/dashboard')
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch dashboard data');
+          return res.json();
+        })
         .then(data => setDashboardData(data))
         .catch(() => setDashboardData(null))
         .finally(() => setLoading(false));
